@@ -1,3 +1,6 @@
+const qs = document.querySelector.bind(document)
+const qsa = document.querySelectorAll.bind(document)
+
 console.log('Popup script background', browser.extension.getBackgroundPage())
 console.log('Popup window', window)
 
@@ -7,6 +10,17 @@ browser.tabs.query({active: true, currentWindow: true})
 
       const media = browser.extension.getBackgroundPage().tabMedia(activeTab)
       console.log('Media', media)
+
+      const mediaList = qs("#media-list")
+
+      mediaList.innerHTML = ""
+
+      media.forEach(m => {
+        const mediaElm = document.createElement("p")
+        mediaElm.innerText = m.url
+
+        mediaList.appendChild(mediaElm)
+      })
 
     })
 

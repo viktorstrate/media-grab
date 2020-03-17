@@ -1,0 +1,30 @@
+{
+
+  "manifest_version": 2,
+  "name": "Media Grab",
+  "version": "1.0",
+
+  "description": "Easily grab media streams from the current web page",
+
+  "icons": {
+    "48": "icons/media-grab-48.png"
+  },
+
+  "permissions": [
+    "tabs",
+    "webRequest",
+    "webRequestBlocking",
+    "<all_urls>"
+  ],
+
+  "browser_action": {
+    "default_icon": "icons/media-grab-48.png",
+    "default_title": "Media Grab",
+    "default_popup": "popup/index.html"
+  },
+
+  "background": {
+    "scripts": ["background.js"]
+  }
+
+}

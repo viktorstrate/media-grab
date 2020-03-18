@@ -11,6 +11,8 @@ browser.tabs.query({active: true, currentWindow: true})
       const media = browser.extension.getBackgroundPage().tabMedia(activeTab)
       console.log('Media', media)
 
+      if (!media) return
+
       const mediaList = qs("#media-list")
 
       mediaList.innerHTML = ""
@@ -18,6 +20,10 @@ browser.tabs.query({active: true, currentWindow: true})
       media.forEach(m => {
         const mediaElm = document.createElement("p")
         mediaElm.innerText = m.url
+
+        mediaElm.onclick = () => {
+          browser.extension.getBackgroundPage().downloadMedia(m)
+        }
 
         mediaList.appendChild(mediaElm)
       })

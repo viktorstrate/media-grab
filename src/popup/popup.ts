@@ -25,7 +25,7 @@ browser.tabs.query({active: true, currentWindow: true})
 
       media.forEach(m => {
         const mediaElm = document.createElement("p")
-        mediaElm.innerText = m.url
+        mediaElm.innerText = m.details.url
 
         mediaElm.onclick = () => {
           bgGlobals.downloadMedia(m)

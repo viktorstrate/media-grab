@@ -1,6 +1,6 @@
 import { browser, WebRequest } from "webextension-polyfill-ts"
-import { Media } from './Media'
 import { BackgroundGlobals } from './BackgroundGlobals'
+import { Media } from "./Media";
 
 const tabMediaData = new Map<number, Media[]>();
 
@@ -16,14 +16,18 @@ function tabMedia(id: number): Media[] {
 }
 
 function downloadMedia(media: Media) {
-  console.log('Downloading media', media.url)
+  console.log('Downloading media', media.details.url)
 }
 
-async function responseCallback (details: WebRequest.OnBeforeRequestDetailsType) {
-  console.log('Media Grab: response', details)
+async function responseCallback (details: WebRequest.OnCompletedDetailsType) {
 
-  const playlistData = await fetch(details.url).then(res => res.text())
-  const files = playlistData.split('\n').filter(x => !x.startsWith('#'))
+  // Most likely a background fetch
+  if (details.tabId == -1) {
+    console.log('Media Grab: ignoring request')
+    return
+  }
+
+  console.log('Media Grab: response', details)
 
   const tabs = await browser.tabs.query({active: true, currentWindow: true})
   const activeTab = tabs[0].id
@@ -33,11 +37,19 @@ async function responseCallback (details: WebRequest.OnBeforeRequestDetailsType)
     tabMedia = tabMediaData.get(activeTab)
   }
 
+  if (tabMedia.filter(m => m.details.url == details.url).length > 0) {
+    console.log('Media Grab: found duplicate')
+    return
+  }
+
+  const playlistData = await fetch(details.url).then(res => res.text())
+  const files = playlistData.trim().split('\n').filter(x => !x.startsWith('#'))
+
+  console.log('Found files', files)
+
   // const baseUrl = details.url.substring(0, details.url.lastIndexOf('/') + 1)
   tabMedia.push({
-    url: details.url,
-    timestamp: new Date(),
-    playlist: files
+    details
   })
 
   tabMediaData.set(activeTab, tabMedia)

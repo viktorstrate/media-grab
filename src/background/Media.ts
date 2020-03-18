@@ -1,5 +1,5 @@
+import { WebRequest } from "webextension-polyfill-ts";
+
 export interface Media {
-  url: string,
-  timestamp: Date,
-  playlist?: string[]
+  details: WebRequest.OnCompletedDetailsType
 }

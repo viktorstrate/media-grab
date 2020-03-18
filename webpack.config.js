@@ -7,7 +7,7 @@ module.exports = {
   devtool: 'sourcemap',
   stats: 'errors-only',
   entry: {
-      background: "./src/background",
+      background: "./src/background/background",
       "popup/popup": "./src/popup/popup"
   },
   module: {

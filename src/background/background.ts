@@ -1,6 +1,7 @@
 import { browser, WebRequest } from "webextension-polyfill-ts"
 import { BackgroundGlobals } from './BackgroundGlobals'
 import { Media } from "./Media";
+import { downloadMedia } from './download'
 
 const tabMediaData = new Map<number, Media[]>();
 
@@ -13,10 +14,6 @@ let backgroundGlobals: BackgroundGlobals = {
 
 function tabMedia(id: number): Media[] {
   return tabMediaData.get(id)
-}
-
-function downloadMedia(media: Media) {
-  console.log('Downloading media', media.details.url)
 }
 
 async function responseCallback (details: WebRequest.OnCompletedDetailsType) {
@@ -42,12 +39,6 @@ async function responseCallback (details: WebRequest.OnCompletedDetailsType) {
     return
   }
 
-  const playlistData = await fetch(details.url).then(res => res.text())
-  const files = playlistData.trim().split('\n').filter(x => !x.startsWith('#'))
-
-  console.log('Found files', files)
-
-  // const baseUrl = details.url.substring(0, details.url.lastIndexOf('/') + 1)
   tabMedia.push({
     details
   })

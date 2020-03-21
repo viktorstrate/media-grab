@@ -1,13 +1,20 @@
 import { WebRequest } from "webextension-polyfill-ts";
+import { Playlist } from "./playlistParser/playlistParser";
 
 export enum MediaType {
-  Playlist
+  M3UPlaylist
+}
+
+export interface MediaGroup {
+  media: Media[]
 }
 
 export interface Media {
-  details: WebRequest.OnCompletedDetailsType
+  url: URL,
+  details?: WebRequest.OnCompletedDetailsType,
+  playlist?: Playlist
 }
 
 export function mediaToType(media: Media): MediaType {
-  return MediaType.Playlist
+  return MediaType.M3UPlaylist
 }

@@ -2,6 +2,7 @@ import { browser, WebRequest } from "webextension-polyfill-ts"
 import { BackgroundGlobals } from './BackgroundGlobals'
 import { Media } from "./Media";
 import { downloadMedia } from './download'
+import { parsePlaylist } from "./playlistParser/playlistParser";
 
 const tabMediaData = new Map<number, Media[]>();
 
@@ -39,11 +40,39 @@ async function responseCallback (details: WebRequest.OnCompletedDetailsType) {
     return
   }
 
-  tabMedia.push({
-    details
-  })
+  const playlistData = await fetch(details.url)
+    .then(res => res.text())
+
+  const playlist = parsePlaylist(playlistData, new URL(details.url))
+
+  if (playlist.medias.length == 0) {
+    console.log('Could not find media in playlist')
+    return
+  }
+
+  if (playlist.header.independentSegments) {
+    console.log("Found independent segments", playlist)
+    for (const media of playlist.medias) {
+      const url = media.segments[0].url
+
+      tabMedia.push({
+        url,
+        details,
+        playlist
+      })
+    }
+  } else {
+    console.log("Found single media", playlist)
+    tabMedia.push({
+      url: new URL(details.url),
+      details,
+      playlist
+    })
+  }
 
   tabMediaData.set(activeTab, tabMedia)
+
+  console.log('Tab media', tabMedia)
 
   browser.browserAction.setBadgeText(
     {

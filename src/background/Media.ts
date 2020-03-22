@@ -16,5 +16,4 @@ export interface Media {
 
   // Avaliable if type is M3UPlaylist
   playlist?: Playlist,
-  playlistMedia?: PlaylistMedia
 }

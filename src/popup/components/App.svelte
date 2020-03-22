@@ -5,6 +5,12 @@
   let mediaPromise = fetchMedia();
 </script>
 
+<style>
+  #app {
+    width: 600px;
+  }
+</style>
+
 <div id="app">
   <h2>Media Grab</h2>
   {#await mediaPromise}

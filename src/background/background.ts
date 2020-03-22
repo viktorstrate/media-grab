@@ -1,8 +1,8 @@
-import { browser, WebRequest } from "webextension-polyfill-ts"
+import { browser, WebRequest, Runtime } from "webextension-polyfill-ts"
 import { BackgroundGlobals } from './BackgroundGlobals'
 import { Media, MediaType } from "./Media";
 import { downloadMedia, downloadPlaylistMediaSegments } from './download'
-import { parsePlaylist, PlaylistMediaType } from "./playlistParser/playlistParser";
+import { parsePlaylist, PlaylistMediaType, Playlist } from "./playlistParser/playlistParser";
 
 const tabMediaData = new Map<number, Media[]>();
 
@@ -51,39 +51,12 @@ async function responseCallback (details: WebRequest.OnCompletedDetailsType) {
     return
   }
 
-  for (const media of playlist.medias) {
-    switch (media.mediaType) {
-    case PlaylistMediaType.SINGLE_MEDIA:
-      const url = media.segments[0].url
-
-      tabMedia.push({
-        type: MediaType.M3UPlaylist,
-        url,
-        details,
-        playlist,
-        playlistMedia: media
-      })
-      break
-    case PlaylistMediaType.MEDIA_SEGMENTS:
-      tabMedia.push({
-        type: MediaType.M3UPlaylist,
-        url: new URL(details.url),
-        details,
-        playlist,
-        playlistMedia: media
-      })
-      break
-    case PlaylistMediaType.PLAYLIST:
-      tabMedia.push({
-        type: MediaType.M3UPlaylist,
-        url: new URL(details.url),
-        details,
-        playlist,
-        playlistMedia: media
-      })
-      break
-    }
-  }
+  tabMedia.push({
+    type: MediaType.M3UPlaylist,
+    url: new URL(details.url),
+    details,
+    playlist,
+  })
 
   tabMediaData.set(activeTab, tabMedia)
 

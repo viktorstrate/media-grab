@@ -1,6 +1,7 @@
-import {Media} from '../background/Media'
+import {Media, MediaType} from '../background/Media'
 import { browser } from "webextension-polyfill-ts"
 import { BackgroundGlobals } from '../background/BackgroundGlobals'
+import { PlaylistMediaType, parsePlaylist } from '../background/playlistParser/playlistParser'
 
 const qs = document.querySelector.bind(document)
 const qsa = document.querySelectorAll.bind(document)
@@ -27,8 +28,35 @@ browser.tabs.query({active: true, currentWindow: true})
         const mediaElm = document.createElement("p")
         mediaElm.innerText = m.url.href
 
-        mediaElm.onclick = () => {
-          bgGlobals.downloadMedia(m)
+        mediaElm.onclick = async () => {
+
+          if (m.type == MediaType.M3UPlaylist) {
+            if (m.playlistMedia.mediaType == PlaylistMediaType.PLAYLIST) {
+              console.log('Downloading playlist')
+
+              const request = await fetch(m.url.href)
+              if (!request.ok) {
+                console.log('Request failed', request)
+                return
+              }
+
+              const playlistData = await request.text()
+              const playlist = parsePlaylist(playlistData, m.url)
+
+              if (playlist.medias[0].mediaType != PlaylistMediaType.MEDIA_SEGMENTS) {
+                console.log('Did not find media segments inside playlist, this is not implemented yet', playlist)
+                return
+              }
+
+              console.log('Downloading media segments inside playlist')
+
+              await bgGlobals.downloadPlaylistMediaSegments(playlist)
+
+            } else {
+              bgGlobals.downloadMedia(m)
+            }
+
+          }
         }
 
         mediaList.appendChild(mediaElm)

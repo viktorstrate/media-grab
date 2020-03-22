@@ -11,9 +11,14 @@ export interface PlaylistSegment {
   duration?: number
 }
 
+export enum PlaylistMediaType {
+  PLAYLIST, SINGLE_MEDIA, MEDIA_SEGMENTS
+}
+
 export interface PlaylistMedia {
   rawTags: PlaylistToken[],
   segments: PlaylistSegment[]
+  mediaType: PlaylistMediaType
   resolution?: string,
   frameRate?: number,
 }
@@ -60,12 +65,19 @@ export function parsePlaylist(input: string, url: URL): Playlist {
     }
   }
 
-  if (result.header.independentSegments) {
+  let masterPlaylist = !mediaTokens[0].media.url.pathname.endsWith(".ts")
+
+  if (masterPlaylist) {
     for (const mediaToken of mediaTokens) {
 
       const resolution = mediaToken.values.find(x => x.key == "RESOLUTION").value
-
       const frameRate = parseFloat(mediaToken.values.find(x => x.key = "FRAME-RATE").value)
+
+      let mediaType = PlaylistMediaType.SINGLE_MEDIA
+
+      if (mediaToken.media.url.pathname.endsWith(".m3u8")) {
+        mediaType = PlaylistMediaType.PLAYLIST
+      }
 
       const media: PlaylistMedia = {
         rawTags: [mediaToken],
@@ -73,6 +85,7 @@ export function parsePlaylist(input: string, url: URL): Playlist {
           url: mediaToken.media.url,
           duration: mediaToken.media.duration
         }],
+        mediaType,
         resolution,
         frameRate
       }
@@ -83,6 +96,7 @@ export function parsePlaylist(input: string, url: URL): Playlist {
     let media: PlaylistMedia = {
       rawTags: [],
       segments: [],
+      mediaType: PlaylistMediaType.MEDIA_SEGMENTS
     }
 
     for (const segment of mediaTokens) {

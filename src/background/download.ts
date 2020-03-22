@@ -1,9 +1,9 @@
 import { browser } from 'webextension-polyfill-ts'
-import { Media, MediaType, mediaToType } from "./Media"
+import { Media, MediaType } from "./Media"
 import { parsePlaylist, PlaylistSegment, Playlist } from "./playlistParser/playlistParser"
 
 export async function downloadMedia(media: Media) {
-  switch(mediaToType(media)) {
+  switch(media.type) {
     case MediaType.M3UPlaylist:
       await downloadPlaylist(media)
       break
@@ -11,6 +11,7 @@ export async function downloadMedia(media: Media) {
       console.log("Download for media type not implemented")
   }
 }
+
 async function downloadPlaylist(media: Media) {
   console.log("Download playlist")
   const url = media.url.href
@@ -37,7 +38,7 @@ async function downloadPlaylist(media: Media) {
   console.log('Did not know how to download playlist', playlist)
 }
 
-async function downloadPlaylistMediaSegments(playlist: Playlist) {
+export async function downloadPlaylistMediaSegments(playlist: Playlist) {
   const chunks = []
   let count = 0
 

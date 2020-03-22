@@ -17,6 +17,11 @@ module.exports = {
         use: 'ts-loader',
         exclude: /node_modules/,
       },
+      {
+        test: /\.svelte$/,
+        exclude: /node_modules/,
+        use: 'svelte-loader'
+      }
     ],
   },
   output: {
@@ -30,13 +35,13 @@ module.exports = {
         from: '**',
         context: 'src',
         ignore: [
-          '*.js'
+          '*.js', '*.ts', '*.svelte'
         ]
       }
     ])
   ],
   resolve: {
-    extensions: [ '.tsx', '.ts', '.js' ],
+    extensions: [ '.ts', '.js', '.svelte' ],
   },
   optimization: {
     // Without this, function names will be garbled and enableFeature won't work

@@ -44,10 +44,10 @@
         .downloadPlaylistMediaSegments;
       downloadSegments(playlist);
 
-      browser.runtime.sendMessage({
-        type: "downloadPlaylistMediaSegments",
-        playlist: JSON.stringify(playlist)
-      });
+      // browser.runtime.sendMessage({
+      //   type: "downloadPlaylistMediaSegments",
+      //   playlist: JSON.stringify(playlist)
+      // });
     }
   }
 </script>

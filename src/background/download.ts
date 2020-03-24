@@ -53,10 +53,13 @@ export async function downloadPlaylistMediaSegments(playlist: Playlist) {
   console.log('Download complete', chunks)
   const combined = new Blob(chunks)
 
+  const firstSegmentUrlPath = playlist.medias[0].segments[0].url.pathname
+  const extension = firstSegmentUrlPath.substring(firstSegmentUrlPath.lastIndexOf("."), firstSegmentUrlPath.length)
+
   const mediaUrl = window.URL.createObjectURL(combined)
   await browser.downloads.download({
     url: mediaUrl,
-    filename: "media.m4v"
+    filename: "media" + extension
   })
 }
 

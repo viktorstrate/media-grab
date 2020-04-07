@@ -83,8 +83,20 @@ browser.webRequest.onCompleted.addListener(
   []
 )
 
-browser.browserAction.onClicked.addListener(function() {
+browser.browserAction.onClicked.addListener(async function() {
   console.log('Popup clicked')
+
+  const tabs = await browser.tabs.query({active: true, currentWindow: true})
+  const activeTab = tabs[0].id
+
+  const popupUrl = browser.extension.getURL("popup/popup.html") + "?tab=" + activeTab
+
+  browser.windows.create({
+    url: popupUrl,
+    type: "popup",
+    width: 640,
+    height: 480
+  })
 })
 
 console.log('Media Grab: Loaded')

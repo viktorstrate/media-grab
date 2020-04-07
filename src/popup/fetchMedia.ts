@@ -6,10 +6,9 @@ const bgGlobals = (browser.extension.getBackgroundPage() as any).globals as Back
 
 export async function fetchMedia(): Promise<Media[]> {
 
-  const tabs = await browser.tabs.query({active: true, currentWindow: true})
-  const activeTab = tabs[0]
+  const activeTab = parseInt(new URLSearchParams(window.location.search).get('tab'))
 
-  let media = bgGlobals.tabMedia(activeTab.id)
+  let media = bgGlobals.tabMedia(activeTab)
 
   if (media === undefined || media === null) {
     media = []

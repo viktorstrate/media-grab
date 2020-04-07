@@ -20,8 +20,7 @@
 
   "browser_action": {
     "default_icon": "icons/media-grab-48.png",
-    "default_title": "Media Grab",
-    "default_popup": "popup/popup.html"
+    "default_title": "Media Grab"
   },
 
   "background": {

@@ -38,7 +38,12 @@ async function downloadPlaylist(media: Media) {
   console.log('Did not know how to download playlist', playlist)
 }
 
-export async function downloadPlaylistMediaSegments(playlist: Playlist) {
+export interface PlaylistMediaDownloadStatus {
+  downloadedChunks: number,
+  totalChunks: number
+}
+
+export async function* downloadPlaylistMediaSegments(playlist: Playlist): AsyncIterableIterator<PlaylistMediaDownloadStatus> {
   const chunks = []
   let count = 0
 
@@ -48,6 +53,12 @@ export async function downloadPlaylistMediaSegments(playlist: Playlist) {
     count++
     console.log(`Downloaded chunk ${count} of ${firstMedia.segments.length}`)
     chunks.push(chunk)
+
+    yield {
+      downloadedChunks: count,
+      totalChunks: firstMedia.segments.length
+    }
+
   }
 
   console.log('Download complete', chunks)

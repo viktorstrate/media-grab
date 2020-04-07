@@ -21,7 +21,7 @@
     return `Unknown: ${type}`;
   }
 
-  function fetchMedia(media) {
+  async function fetchMedia(media) {
     if (media.mediaType == PlaylistMediaType.Playlist) {
       console.log("Fetching media playlist", media.segments[0].url);
 
@@ -42,7 +42,16 @@
 
       const downloadSegments = browser.extension.getBackgroundPage().globals
         .downloadPlaylistMediaSegments;
-      downloadSegments(playlist);
+
+      const progressIterator = downloadSegments(playlist);
+
+      console.log("Progress iterator:", progressIterator);
+
+      for await (const progress of progressIterator) {
+        console.log("Popup progress:", progress);
+        media.progress = progress;
+        playlist = playlist;
+      }
 
       // browser.runtime.sendMessage({
       //   type: "downloadPlaylistMediaSegments",
@@ -101,6 +110,12 @@
             {:catch err}
               <b>ERROR: {err.message}</b>
             {/await}
+          {/if}
+          {#if media.progress !== undefined}
+            <p>
+              Downloaded {media.progress.downloadedChunks} of {media.progress.totalChunks}
+              segments
+            </p>
           {/if}
         </p>
       </li>
